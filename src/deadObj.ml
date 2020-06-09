@@ -192,7 +192,7 @@ let collect_export path u stock ~obj ~cltyp loc =
 
   let save id =
     if not (Sys.file_exists (Filename.chop_extension !current_src ^ ".csml")) then
-      export ~sep:"#" path u stock (Ident.create id) loc;
+      export ~sep:"#" path u stock (Ident.create_local id) loc;
   in
 
   let typ = match cltyp with

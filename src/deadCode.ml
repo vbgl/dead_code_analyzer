@@ -130,7 +130,7 @@ let structure_item super self i =
       let collect_include signature =
         let prev_last_loc = !last_loc in
         List.iter
-          (collect_export ~mod_type:true [Ident.create (unit !current_src)] _include incl)
+          (collect_export ~mod_type:true [Ident.create_local (unit !current_src)] _include incl)
           signature;
         last_loc := prev_last_loc;
       in
@@ -400,7 +400,7 @@ let read_interface fn src = let open Cmi_format in
        || !DeadFlag.typ.DeadFlag.print
     then
       let f =
-        collect_export [Ident.create (String.capitalize_ascii u)] u decs
+        collect_export [Ident.create_local (String.capitalize_ascii u)] u decs
       in
       List.iter f (read_cmi fn).cmi_sign;
       last_loc := Lexing.dummy_pos
