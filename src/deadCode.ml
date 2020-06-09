@@ -36,7 +36,7 @@ let rec collect_export ?(mod_type = false) path u stock = function
   | Sig_value (id, ({Types.val_loc; val_type; _} as value), _)
     when not val_loc.Location.loc_ghost && stock == decs ->
       if !DeadFlag.exported.DeadFlag.print then export path u stock id val_loc;
-      let path = Ident.(with_name id (name id ^ "*")) :: path in
+      let path = Ident.rename id :: path in
       DeadObj.collect_export path u stock ~obj:val_type val_loc;
       !DeadLexiFi.sig_value value
 
