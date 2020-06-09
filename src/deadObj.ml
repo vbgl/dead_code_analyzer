@@ -286,6 +286,7 @@ let class_field f =
         let path = Path.name path in
         if Hashtbl.mem defined path then Hashtbl.find defined path
         else path
+    | Tcl_open(_, cl_exp)
     | Tcl_fun (_, _, _, cl_exp, _)
     | Tcl_apply (cl_exp, _)
     | Tcl_let (_, _, _, cl_exp)

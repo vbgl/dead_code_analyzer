@@ -28,9 +28,9 @@ let rec sign ?(isfunc = false) = function
 
 
 let item maker = function
-  | Sig_value (id, {val_loc = {Location.loc_start= loc; _}; _}) ->
+  | Sig_value (id, {val_loc = {Location.loc_start= loc; _}; _}, _) ->
       (name id, loc)::[]
-  | Sig_type (tid, {type_kind; _}, _) -> begin match type_kind with
+  | Sig_type (tid, {type_kind; _}, _, _) -> begin match type_kind with
     | Type_record (l, _) ->
         List.map
           (fun {Types.ld_id=id; ld_loc = {Location.loc_start = loc; _}; _} ->
@@ -44,10 +44,10 @@ let item maker = function
           )
           l
     | _ -> [] end
-  | Sig_module (id, {md_type; _}, _)
-  | Sig_modtype (id, {mtd_type = Some md_type; _}) ->
+  | Sig_module (id, _, {md_type; _}, _, _)
+  | Sig_modtype (id, {mtd_type = Some md_type; _}, _) ->
       List.map (fun (n, l) -> (name id ^ "." ^ n, l)) (maker md_type)
-  | Sig_class (id, {cty_loc = {Location.loc_start = loc; _}; _}, _) ->
+  | Sig_class (id, {cty_loc = {Location.loc_start = loc; _}; _}, _, _) ->
       (name id ^ "#", loc) :: []
   | _ -> []
 

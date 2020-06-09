@@ -33,21 +33,21 @@ let main_files = Hashtbl.create 256   (* names -> paths *)
 
 let rec collect_export ?(mod_type = false) path u stock = function
 
-  | Sig_value (id, ({Types.val_loc; val_type; _} as value))
+  | Sig_value (id, ({Types.val_loc; val_type; _} as value), _)
     when not val_loc.Location.loc_ghost && stock == decs ->
       if !DeadFlag.exported.DeadFlag.print then export path u stock id val_loc;
       let path = Ident.(with_name id (name id ^ "*")) :: path in
       DeadObj.collect_export path u stock ~obj:val_type val_loc;
       !DeadLexiFi.sig_value value
 
-  | Sig_type (id, t, _) when stock == decs ->
+  | Sig_type (id, t, _, _) when stock == decs ->
       DeadType.collect_export (id :: path) u stock t
 
-  | Sig_class (id, {Types.cty_type = t; cty_loc = loc; _}, _) ->
+  | Sig_class (id, {Types.cty_type = t; cty_loc = loc; _}, _, _) ->
       DeadObj.collect_export (id :: path) u stock ~cltyp:t loc
 
-  | (Sig_module (id, {Types.md_type = t; _}, _)
-  | Sig_modtype (id, {Types.mtd_type = Some t; _})) as s ->
+  | (Sig_module (id, _, {Types.md_type = t; _}, _, _)
+  | Sig_modtype (id, {Types.mtd_type = Some t; _}, _)) as s ->
       let collect = match s with Sig_modtype _ -> mod_type | _ -> true in
       if collect then
         DeadMod.sign t
@@ -64,9 +64,8 @@ let rec treat_exp exp args =
   | Texp_field (_, _, {lbl_loc = {Location.loc_start = loc; _}; _}) ->
       DeadArg.process loc args;
 
-  | Texp_match (_, l1, l2, _) ->
-      List.iter (fun {c_rhs = exp; _} -> treat_exp exp args) l1;
-      List.iter (fun {c_rhs = exp; _} -> treat_exp exp args) l2
+  | Texp_match (_, l, _) ->
+      List.iter (fun {c_rhs = exp; _} -> treat_exp exp args) l
 
   | Texp_ifthenelse (_, exp_then, exp_else) ->
       treat_exp exp_then args;
